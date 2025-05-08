@@ -1,24 +1,74 @@
-﻿using System.Text;
+﻿using AIImageGuide.Data;
+using AIImageGuide.Services;
+using AIImageGuide.Views;
+using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace AIImageGuide
+namespace AIImageGuide;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly UserService _userService;
+    private readonly AdminService _adminService;
+
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+        optionsBuilder.UseSqlite("Data Source=image-guide.db");
+        var context = new AppDbContext(optionsBuilder.Options);
+
+        _userService = new UserService(context);
+        _adminService = new AdminService(context);
+
+        UpdateLogoutButtonVisibility();
+        MainContent.Content = new LoginView(_userService);
+    }
+
+    public void UpdateLogoutButtonVisibility()
+    {
+        LogoutButton.Visibility = _userService.GetCurrentUser() != null ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void HomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new TextBlock { Text = "Welcome to AI Image Guide!", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+    }
+
+    private void GuideButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new TextBlock { Text = "Guide Content Placeholder", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+    }
+
+    private void LoginButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new LoginView(_userService);
+    }
+
+    private void RegisterButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new RegisterView(_userService);
+    }
+
+    private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
+    {
+        var currentUser = _userService.GetCurrentUser();
+        if (currentUser?.Role == "Admin")
         {
-            InitializeComponent();
+            MainContent.Content = new AdminPanelView(_adminService);
         }
+        else
+        {
+            MessageBox.Show("Access denied. Admin role required.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void LogoutButton_Click(object sender, RoutedEventArgs e)
+    {
+        _userService.Logout();
+        UpdateLogoutButtonVisibility();
+        MainContent.Content = new LoginView(_userService);
     }
 }
