@@ -11,6 +11,7 @@ public partial class MainWindow : Window
 {
     private readonly UserService _userService;
     private readonly AdminService _adminService;
+    private readonly ImageService _imageService;
 
     public MainWindow()
     {
@@ -22,6 +23,7 @@ public partial class MainWindow : Window
 
         _userService = new UserService(context);
         _adminService = new AdminService(context);
+        _imageService = new ImageService(context);
 
         UpdateLogoutButtonVisibility();
         MainContent.Content = new LoginView(_userService);
@@ -32,14 +34,24 @@ public partial class MainWindow : Window
         LogoutButton.Visibility = _userService.GetCurrentUser() != null ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    public void NavigateToImageDetails(int imageId)
+    {
+        MainContent.Content = new ImageDetailsView(_imageService, _userService, imageId);
+    }
+
     private void HomeButton_Click(object sender, RoutedEventArgs e)
     {
         MainContent.Content = new TextBlock { Text = "Welcome to AI Image Guide!", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
     }
 
-    private void GuideButton_Click(object sender, RoutedEventArgs e)
+    private void UploadButton_Click(object sender, RoutedEventArgs e)
     {
-        MainContent.Content = new TextBlock { Text = "Guide Content Placeholder", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        MainContent.Content = new ImageUploadView(_imageService, _userService);
+    }
+
+    private void GalleryButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new ImageGalleryView(_imageService, _userService);
     }
 
     private void LoginButton_Click(object sender, RoutedEventArgs e)

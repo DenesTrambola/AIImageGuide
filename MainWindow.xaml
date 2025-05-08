@@ -30,8 +30,13 @@
             <Button
                 Margin="5"
                 Padding="10,5"
-                Click="GuideButton_Click"
-                Content="Guide" />
+                Click="UploadButton_Click"
+                Content="Upload" />
+            <Button
+                Margin="5"
+                Padding="10,5"
+                Click="GalleryButton_Click"
+                Content="Gallery" />
             <Button
                 Margin="5"
                 Padding="10,5"

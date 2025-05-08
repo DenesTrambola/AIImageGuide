@@ -1,0 +1,98 @@
+﻿<UserControl
+    x:Class="AIImageGuide.Views.ImageDetailsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AIImageGuide.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="600" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Margin="0,0,0,10"
+                FontSize="24"
+                FontWeight="Bold"
+                Text="Image Details" />
+            <Image
+                x:Name="ImageControl"
+                Grid.Row="1"
+                Height="300"
+                Margin="0,0,0,10"
+                Stretch="Uniform" />
+            <TextBlock
+                x:Name="TitleTextBlock"
+                Grid.Row="2"
+                Margin="0,0,0,5"
+                FontSize="18"
+                FontWeight="Bold" />
+            <TextBlock
+                x:Name="DescriptionTextBlock"
+                Grid.Row="2"
+                Margin="0,30,0,10"
+                TextWrapping="Wrap" />
+            <StackPanel
+                Grid.Row="3"
+                Margin="0,0,0,10"
+                Orientation="Horizontal">
+                <TextBlock Text="Rating (1-5):" />
+                <ComboBox
+                    x:Name="RatingComboBox"
+                    Width="60"
+                    Margin="5,0"
+                    SelectionChanged="RatingComboBox_SelectionChanged">
+                    <ComboBoxItem Content="1" />
+                    <ComboBoxItem Content="2" />
+                    <ComboBoxItem Content="3" />
+                    <ComboBoxItem Content="4" />
+                    <ComboBoxItem Content="5" />
+                </ComboBox>
+                <TextBlock
+                    x:Name="RatingMessageTextBlock"
+                    Margin="5,0"
+                    Foreground="Red" />
+            </StackPanel>
+            <StackPanel Grid.Row="4" Margin="0,0,0,10">
+                <TextBlock Text="Add Comment:" />
+                <TextBox
+                    x:Name="CommentTextBox"
+                    Height="60"
+                    Margin="0,5"
+                    Padding="5"
+                    AcceptsReturn="True" />
+                <Button
+                    Margin="0,5"
+                    Padding="10,5"
+                    Click="SubmitCommentButton_Click"
+                    Content="Submit Comment" />
+                <TextBlock
+                    x:Name="CommentMessageTextBlock"
+                    Margin="0,5"
+                    Foreground="Red" />
+            </StackPanel>
+            <ListView
+                x:Name="CommentsListView"
+                Grid.Row="5"
+                Margin="0,0,0,10">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,5">
+                            <TextBlock FontWeight="Bold" Text="{Binding User.Username}" />
+                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap" />
+                            <TextBlock FontStyle="Italic" Text="{Binding CreatedAt, StringFormat='Posted on {0:MMM dd, yyyy}'}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
