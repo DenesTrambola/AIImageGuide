@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="AIImageGuide.Views.ImageGalleryView"
+    x:Class="AIImageGuide.Views.SearchView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,28 +19,26 @@
             Margin="0,0,0,10"
             FontSize="24"
             FontWeight="Bold"
-            Text="Image Gallery" />
+            Text="Search Images" />
         <StackPanel
             Grid.Row="1"
             Margin="0,0,0,10"
             Orientation="Horizontal">
+            <TextBox
+                x:Name="SearchTextBox"
+                Width="200"
+                Margin="5"
+                Padding="5"
+                TextChanged="SearchTextBox_TextChanged" />
             <ComboBox
                 x:Name="CategoryComboBox"
                 Width="150"
                 Margin="5"
                 DisplayMemberPath="Name"
                 SelectionChanged="CategoryComboBox_SelectionChanged" />
-            <ComboBox
-                x:Name="SortComboBox"
-                Width="150"
-                Margin="5"
-                SelectionChanged="SortComboBox_SelectionChanged">
-                <ComboBoxItem Content="Newest First" />
-                <ComboBoxItem Content="Highest Rated" />
-            </ComboBox>
         </StackPanel>
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <ListView x:Name="ImagesListView" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView x:Name="SearchResultsListView" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal" />

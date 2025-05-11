@@ -1,0 +1,125 @@
+﻿<UserControl
+    x:Class="AIImageGuide.Views.UserProfileView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AIImageGuide.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="800" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                x:Name="UsernameTextBlock"
+                Margin="0,0,0,10"
+                FontSize="24"
+                FontWeight="Bold" />
+            <TabControl Grid.Row="1" Margin="0,0,0,10">
+                <TabItem Header="Uploaded Images">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ListView x:Name="UploadedImagesListView" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="5"
+                                        BorderBrush="Gray"
+                                        BorderThickness="1">
+                                        <StackPanel Width="200" Margin="5">
+                                            <Image
+                                                Height="150"
+                                                Source="{Binding FilePath}"
+                                                Stretch="Uniform" />
+                                            <TextBlock
+                                                Margin="0,5,0,0"
+                                                FontWeight="Bold"
+                                                Text="{Binding Title}" />
+                                            <TextBlock
+                                                MaxHeight="40"
+                                                Text="{Binding Description}"
+                                                TextWrapping="Wrap" />
+                                            <Button
+                                                Margin="0,5"
+                                                Padding="5,2"
+                                                Click="ViewDetailsButton_Click"
+                                                Content="View Details" />
+                                            <Button
+                                                Margin="0,5"
+                                                Padding="5,2"
+                                                Click="DeleteImageButton_Click"
+                                                Content="Delete" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <StackPanel
+                            Grid.Row="1"
+                            Margin="0,10,0,0"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Button
+                                x:Name="PreviousButton"
+                                Margin="5"
+                                Padding="10,5"
+                                Click="PreviousButton_Click"
+                                Content="Previous"
+                                IsEnabled="False" />
+                            <TextBlock
+                                x:Name="PageInfoTextBlock"
+                                Margin="5"
+                                VerticalAlignment="Center" />
+                            <Button
+                                x:Name="NextButton"
+                                Margin="5"
+                                Padding="10,5"
+                                Click="NextButton_Click"
+                                Content="Next" />
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Activity">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Text="Ratings and Comments" />
+                        <ListView x:Name="ActivityListView" Grid.Row="1">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,5">
+                                        <TextBlock FontWeight="Bold">
+                                            <Run Text="{Binding Type}" />
+                                            <Run Text=" on " />
+                                            <Run Text="{Binding Image.Title}" />
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Content}" TextWrapping="Wrap" />
+                                        <TextBlock FontStyle="Italic" Text="{Binding CreatedAt, StringFormat='Posted on {0:MMM dd, yyyy}'}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

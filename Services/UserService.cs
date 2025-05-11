@@ -1,12 +1,29 @@
 ﻿using AIImageGuide.Data;
 using AIImageGuide.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace AIImageGuide.Services;
 
 public class UserService : ServiceBase
 {
-    public UserService(AppDbContext context) : base(context) { }
+    public User? CurrentUser { get; private set; }
+
+    public UserService(AppDbContext context) : base(context)
+    {
+        var authToken = Properties.Settings.Default.AuthToken;
+        var userId = Properties.Settings.Default.UserId;
+        if (!string.IsNullOrEmpty(authToken) && userId > 0)
+        {
+            CurrentUser = context.Users.Find(userId);
+            if (CurrentUser == null || CurrentUser.IsBlocked)
+            {
+                Properties.Settings.Default.AuthToken = null;
+                Properties.Settings.Default.UserId = 0;
+                Properties.Settings.Default.Save();
+            }
+        }
+    }
 
     public (bool Success, string Message) Register(string username, string email, string password)
     {
@@ -43,9 +60,10 @@ public class UserService : ServiceBase
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             return (false, null, "Invalid username/email or password.");
 
+        CurrentUser = user;
+
         if (rememberMe)
         {
-            // Store secure token (simplified for demo)
             Properties.Settings.Default.AuthToken = Guid.NewGuid().ToString();
             Properties.Settings.Default.UserId = user.Id;
             Properties.Settings.Default.Save();
@@ -54,19 +72,54 @@ public class UserService : ServiceBase
         return (true, user, "Login successful.");
     }
 
-    public User? GetCurrentUser()
+    public User? GetUserById(int userId)
     {
-        if (!string.IsNullOrEmpty(Properties.Settings.Default.AuthToken))
-        {
-            return _context.Users.Find(Properties.Settings.Default.UserId);
-        }
-        return null;
+        return _context.Users.Find(userId);
     }
 
     public void Logout()
     {
+        CurrentUser = null;
+
         Properties.Settings.Default.AuthToken = null;
         Properties.Settings.Default.UserId = 0;
         Properties.Settings.Default.Save();
+    }
+
+    public List<Image> GetUserImages(int userId, int? categoryId = null, string sortBy = "UploadDate")
+    {
+        var query = _context.Images
+            .Include(i => i.User)
+            .Include(i => i.Category)
+            .Include(i => i.Ratings)
+            .Where(i => i.UserId == userId)
+            .AsQueryable();
+        if (categoryId.HasValue)
+            query = query.Where(i => i.CategoryId == categoryId.Value);
+        query = sortBy switch
+        {
+            "Rating" => query.OrderByDescending(i => i.Ratings.Any() ? i.Ratings.Average(r => r.Value) : 0),
+            "UploadDate" => query.OrderByDescending(i => i.UploadDate),
+            _ => query.OrderByDescending(i => i.UploadDate)
+        };
+        return query.ToList();
+    }
+
+    public List<Rating> GetUserRatings(int userId)
+    {
+        return _context.Ratings
+            .Include(r => r.Image)
+            .ThenInclude(i => i.User)
+            .Where(r => r.UserId == userId)
+            .ToList();
+    }
+
+    public List<Comment> GetUserComments(int userId)
+    {
+        return _context.Comments
+            .Include(c => c.Image)
+            .ThenInclude(i => i.User)
+            .Where(c => c.UserId == userId)
+            .ToList();
     }
 }

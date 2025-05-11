@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AIImageGuide.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250508091723_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250511111417_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,15 +28,16 @@ namespace AIImageGuide.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -49,7 +50,6 @@ namespace AIImageGuide.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -81,26 +81,20 @@ namespace AIImageGuide.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ViewCount")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -114,10 +108,6 @@ namespace AIImageGuide.Migrations
 
             modelBuilder.Entity("AIImageGuide.Models.Rating", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ImageId")
                         .HasColumnType("INTEGER");
 
@@ -127,9 +117,7 @@ namespace AIImageGuide.Migrations
                     b.Property<int>("Value")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
+                    b.HasKey("ImageId", "UserId");
 
                     b.HasIndex("UserId");
 

@@ -57,14 +57,11 @@ public class ImageService : ServiceBase
         }
     }
 
-    public List<Image> GetImages(int? categoryId = null, string sortBy = "UploadDate")
+    public (List<Image> Images, int TotalPages) GetImages(int? categoryId = null, string sortBy = "UploadDate", int page = 1, int pageSize = 6)
     {
-        var query = _context.Images.AsQueryable();
+        var query = _context.Images.Include(i => i.User).Include(i => i.Category).Include(i => i.Ratings).AsQueryable();
         if (categoryId.HasValue)
-            query = query.Where(i => i.CategoryId == categoryId.Value)
-                         .Include(i => i.User)
-                         .Include(i => i.Comments)
-                         .ThenInclude(c => c.User);
+            query = query.Where(i => i.CategoryId == categoryId.Value);
 
         query = sortBy switch
         {
@@ -73,7 +70,94 @@ public class ImageService : ServiceBase
             _ => query.OrderByDescending(i => i.UploadDate)
         };
 
-        return query.ToList();
+        int totalImages = query.Count();
+        int totalPages = (int)Math.Ceiling((double)totalImages / pageSize);
+
+        var images = query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return (images, totalPages);
+    }
+
+    public (List<Image> Images, int TotalPages) SearchImages(string query, int? categoryId = null, int page = 1, int pageSize = 6)
+    {
+        var searchQuery = _context.Images
+            .Include(i => i.User)
+            .Include(i => i.Category)
+            .Include(i => i.Ratings)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            query = query.ToLower();
+            searchQuery = searchQuery.Where(i =>
+                i.Title.ToLower().Contains(query) ||
+                (i.Description != null && i.Description.ToLower().Contains(query)) ||
+                i.Category.Name.ToLower().Contains(query));
+        }
+
+        if (categoryId.HasValue)
+            searchQuery = searchQuery.Where(i => i.CategoryId == categoryId.Value);
+
+        int totalImages = searchQuery.Count();
+        int totalPages = (int)Math.Ceiling((double)totalImages / pageSize);
+
+        var images = searchQuery
+            .OrderByDescending(i => i.UploadDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return (images, totalPages);
+    }
+
+    public (List<Image> Images, int TotalPages) GetUserImages(int userId, int page = 1, int pageSize = 6)
+    {
+        var query = _context.Images
+            .Include(i => i.User)
+            .Include(i => i.Category)
+            .Include(i => i.Ratings)
+            .Where(i => i.UserId == userId);
+
+        int totalImages = query.Count();
+        int totalPages = (int)Math.Ceiling((double)totalImages / pageSize);
+
+        var images = query
+            .OrderByDescending(i => i.UploadDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return (images, totalPages);
+    }
+
+    public (bool Success, string Message) DeleteImage(int imageId, int userId, bool isAdmin)
+    {
+        var image = _context.Images.FirstOrDefault(i => i.Id == imageId);
+        if (image == null)
+            return (false, "Image not found.");
+
+        if (image.UserId != userId && !isAdmin)
+            return (false, "Only the image owner or an admin can delete this image.");
+
+        try
+        {
+            _context.Ratings.RemoveRange(_context.Ratings.Where(r => r.ImageId == imageId));
+            _context.Comments.RemoveRange(_context.Comments.Where(c => c.ImageId == imageId));
+            _context.Images.Remove(image);
+
+            if (File.Exists(image.FilePath))
+                File.Delete(image.FilePath);
+
+            _context.SaveChanges();
+            return (true, "Image deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Deletion failed: {ex.Message}");
+        }
     }
 
     public (bool Success, string Message) AddRating(int imageId, int userId, int value)

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace AIImageGuide.Views;
 
-public partial class ImageGalleryView : UserControl
+public partial class SearchView : UserControl
 {
     private readonly ImageService _imageService;
     private readonly UserService _userService;
@@ -12,30 +12,28 @@ public partial class ImageGalleryView : UserControl
     private int _pageSize = 6;
     private int _totalPages = 1;
 
-    public ImageGalleryView(ImageService imageService, UserService userService)
+    public SearchView(ImageService imageService, UserService userService)
     {
         InitializeComponent();
         _imageService = imageService;
         _userService = userService;
 
         var categories = _imageService.GetCategories().ToList();
-        categories.Insert(0, new Models.Category { Id = -1, Name = "All Categories" });
+        categories.Insert(0, new() { Id = -1, Name = "All Categories" });
 
         CategoryComboBox.ItemsSource = categories;
         CategoryComboBox.SelectedIndex = 0;
-        SortComboBox.SelectedIndex = 0;
 
-        RefreshImages();
+        RefreshSearchResults();
     }
 
-    private void RefreshImages()
+    private void RefreshSearchResults()
     {
         int? categoryId = CategoryComboBox.SelectedIndex == 0 ? null : ((dynamic)CategoryComboBox.SelectedItem).Id;
-        string sortBy = SortComboBox.SelectedIndex == 0 ? "UploadDate" : "Rating";
-        var (images, totalPages) = _imageService.GetImages(categoryId, sortBy, _currentPage, _pageSize);
+        var (images, totalPages) = _imageService.SearchImages(SearchTextBox.Text, categoryId, _currentPage, _pageSize);
 
         _totalPages = totalPages;
-        ImagesListView.ItemsSource = images;
+        SearchResultsListView.ItemsSource = images;
 
         UpdatePaginationControls();
     }
@@ -55,7 +53,7 @@ public partial class ImageGalleryView : UserControl
         if (_currentPage > 1)
         {
             _currentPage--;
-            RefreshImages();
+            RefreshSearchResults();
         }
     }
 
@@ -64,20 +62,20 @@ public partial class ImageGalleryView : UserControl
         if (_currentPage < _totalPages)
         {
             _currentPage++;
-            RefreshImages();
+            RefreshSearchResults();
         }
+    }
+
+    private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        _currentPage = 1; // Reset to first page on search change
+        RefreshSearchResults();
     }
 
     private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        _currentPage = 1; // Reset to first page on filter change
-        RefreshImages();
-    }
-
-    private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        _currentPage = 1; // Reset to first page on sort change
-        RefreshImages();
+        _currentPage = 1; // Reset to first page on category change
+        RefreshSearchResults();
     }
 
     private void ViewDetailsButton_Click(object sender, RoutedEventArgs e)

@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:AIImageGuide.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:AIImageGuide.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -13,6 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock
             Margin="0,0,0,10"
@@ -68,5 +68,28 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
+            <Button
+                x:Name="PreviousButton"
+                Margin="5"
+                Padding="10,5"
+                Click="PreviousButton_Click"
+                Content="Previous"
+                IsEnabled="False" />
+            <TextBlock
+                x:Name="PageInfoTextBlock"
+                Margin="5"
+                VerticalAlignment="Center" />
+            <Button
+                x:Name="NextButton"
+                Margin="5"
+                Padding="10,5"
+                Click="NextButton_Click"
+                Content="Next" />
+        </StackPanel>
     </Grid>
 </UserControl>

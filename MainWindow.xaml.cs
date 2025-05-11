@@ -31,7 +31,7 @@ public partial class MainWindow : Window
 
     public void UpdateLogoutButtonVisibility()
     {
-        LogoutButton.Visibility = _userService.GetCurrentUser() != null ? Visibility.Visible : Visibility.Collapsed;
+        LogoutButton.Visibility = _userService.CurrentUser != null ? Visibility.Visible : Visibility.Collapsed;
     }
 
     public void NavigateToImageDetails(int imageId)
@@ -54,6 +54,25 @@ public partial class MainWindow : Window
         MainContent.Content = new ImageGalleryView(_imageService, _userService);
     }
 
+    private void SearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new SearchView(_imageService, _userService);
+    }
+
+    private void ProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        var currentUser = _userService.CurrentUser;
+        if (currentUser == null)
+        {
+            MessageBox.Show("Please log in to view your profile.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MainContent.Content = new LoginView(_userService);
+        }
+        else
+        {
+            MainContent.Content = new UserProfileView(_imageService, _userService, currentUser.Id);
+        }
+    }
+
     private void LoginButton_Click(object sender, RoutedEventArgs e)
     {
         MainContent.Content = new LoginView(_userService);
@@ -66,7 +85,7 @@ public partial class MainWindow : Window
 
     private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
     {
-        var currentUser = _userService.GetCurrentUser();
+        var currentUser = _userService.CurrentUser;
         if (currentUser?.Role == "Admin")
         {
             MainContent.Content = new AdminPanelView(_adminService);

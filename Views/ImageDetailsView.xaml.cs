@@ -22,7 +22,7 @@ public partial class ImageDetailsView : UserControl
 
     private void LoadImageDetails()
     {
-        var image = _imageService.GetImages().FirstOrDefault(i => i.Id == _imageId);
+        var image = _imageService.GetImages().Images.FirstOrDefault(i => i.Id == _imageId);
 
         if (image == null)
         {
@@ -38,7 +38,7 @@ public partial class ImageDetailsView : UserControl
 
     private void RatingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        var currentUser = _userService.GetCurrentUser();
+        var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
             RatingMessageTextBlock.Text = "Please log in to rate.";
@@ -56,7 +56,7 @@ public partial class ImageDetailsView : UserControl
 
     private void SubmitCommentButton_Click(object sender, RoutedEventArgs e)
     {
-        var currentUser = _userService.GetCurrentUser();
+        var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
             CommentMessageTextBlock.Text = "Please log in to comment.";

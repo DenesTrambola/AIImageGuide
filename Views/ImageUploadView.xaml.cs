@@ -35,7 +35,7 @@ public partial class ImageUploadView : UserControl
 
     private void UploadButton_Click(object sender, RoutedEventArgs e)
     {
-        var currentUser = _userService.GetCurrentUser();
+        var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
             MessageTextBlock.Text = "Please log in to upload images.";

@@ -7,9 +7,20 @@ public class AdminService : ServiceBase
 {
     public AdminService(AppDbContext context) : base(context) { }
 
-    public List<User> GetAllUsers()
+    public (List<User> Users, int TotalPages) GetAllUsers(int page = 1, int pageSize = 10)
     {
-        return _context.Users.ToList();
+        var query = _context.Users.AsQueryable();
+        int totalUsers = query.Count();
+        int totalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+
+        var users = query
+            .Where(u => u.Id != Properties.Settings.Default.UserId)
+            .OrderBy(u => u.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return (users, totalPages);
     }
 
     public bool BlockUser(int userId, bool block)
@@ -34,7 +45,7 @@ public class AdminService : ServiceBase
     public bool DeleteUser(int userId)
     {
         var user = _context.Users.Find(userId);
-        if (user == null || user.Role == "Admin") return false;
+        if (user == null) return false;
         _context.Users.Remove(user);
         _context.SaveChanges();
         return true;

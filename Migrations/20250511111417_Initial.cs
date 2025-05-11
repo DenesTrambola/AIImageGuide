@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AIImageGuide.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,8 +17,8 @@ namespace AIImageGuide.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,12 +50,11 @@ namespace AIImageGuide.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
-                    FilePath = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UploadDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ViewCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    FilePath = table.Column<string>(type: "TEXT", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,7 +81,7 @@ namespace AIImageGuide.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ImageId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Content = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -106,15 +105,13 @@ namespace AIImageGuide.Migrations
                 name: "Ratings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
                     ImageId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Value = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                    table.PrimaryKey("PK_Ratings", x => new { x.ImageId, x.UserId });
                     table.ForeignKey(
                         name: "FK_Ratings_Images_ImageId",
                         column: x => x.ImageId,
@@ -128,6 +125,12 @@ namespace AIImageGuide.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_Name",
+                table: "Categories",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ImageId",
@@ -148,11 +151,6 @@ namespace AIImageGuide.Migrations
                 name: "IX_Images_UserId",
                 table: "Images",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ratings_ImageId",
-                table: "Ratings",
-                column: "ImageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",
