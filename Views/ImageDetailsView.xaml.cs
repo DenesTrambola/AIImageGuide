@@ -26,13 +26,13 @@ public partial class ImageDetailsView : UserControl
 
         if (image == null)
         {
-            TitleTextBlock.Text = "Image not found.";
+            TitleTextBlock.Text = "Зображення не знайдено.";
             return;
         }
 
         ImageControl.Source = new BitmapImage(new Uri(image.FilePath));
         TitleTextBlock.Text = image.Title;
-        DescriptionTextBlock.Text = image.Description ?? "No description.";
+        DescriptionTextBlock.Text = image.Description ?? "Нема опису.";
         CommentsListView.ItemsSource = image.Comments;
     }
 
@@ -41,7 +41,7 @@ public partial class ImageDetailsView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
-            RatingMessageTextBlock.Text = "Please log in to rate.";
+            RatingMessageTextBlock.Text = "Будь ласка, увійдіть, щоб оцінити.";
             RatingComboBox.SelectedIndex = -1;
             return;
         }
@@ -59,7 +59,7 @@ public partial class ImageDetailsView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
-            CommentMessageTextBlock.Text = "Please log in to comment.";
+            CommentMessageTextBlock.Text = "Будь ласка, увійдіть, щоб залишити коментар.";
             return;
         }
 

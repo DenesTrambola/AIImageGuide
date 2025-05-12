@@ -27,8 +27,8 @@ public partial class LoginView : UserControl
             var mainWindow = Application.Current.MainWindow as MainWindow;
             if (mainWindow != null)
             {
-                mainWindow.MainContent.Content = new TextBlock { Text = "Welcome back!", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-                mainWindow.UpdateLogoutButtonVisibility();
+                mainWindow.MainContent.Content = new TextBlock { Text = "Ласкаво просимо назад!", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                mainWindow.UpdateButtonsVisibility();
             }
         }
     }

@@ -3,7 +3,6 @@ using AIImageGuide.Services;
 using AIImageGuide.Views;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace AIImageGuide;
 
@@ -25,23 +24,38 @@ public partial class MainWindow : Window
         _adminService = new AdminService(context);
         _imageService = new ImageService(context);
 
-        UpdateLogoutButtonVisibility();
-        MainContent.Content = new LoginView(_userService);
+        UpdateButtonsVisibility();
+
+        MainContent.Content = _userService.CurrentUser == null
+            ? new LoginView(_userService)
+            : new ImageGalleryView(_imageService, _userService);
     }
 
-    public void UpdateLogoutButtonVisibility()
+    public void UpdateButtonsVisibility()
     {
-        LogoutButton.Visibility = _userService.CurrentUser != null ? Visibility.Visible : Visibility.Collapsed;
+        if (_userService.CurrentUser == null)
+        {
+            LoginButton.Visibility = Visibility.Visible;
+            RegisterButton.Visibility = Visibility.Visible;
+            LogoutButton.Visibility = Visibility.Collapsed;
+            ProfileButton.Visibility = Visibility.Collapsed;
+            UploadButton.Visibility = Visibility.Collapsed;
+            AdminPanelButton.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            LoginButton.Visibility = Visibility.Collapsed;
+            RegisterButton.Visibility = Visibility.Collapsed;
+            LogoutButton.Visibility = Visibility.Visible;
+            ProfileButton.Visibility = Visibility.Visible;
+            UploadButton.Visibility = Visibility.Visible;
+            AdminPanelButton.Visibility = _userService.CurrentUser.Role == "Admin" ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 
     public void NavigateToImageDetails(int imageId)
     {
         MainContent.Content = new ImageDetailsView(_imageService, _userService, imageId);
-    }
-
-    private void HomeButton_Click(object sender, RoutedEventArgs e)
-    {
-        MainContent.Content = new TextBlock { Text = "Welcome to AI Image Guide!", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
     }
 
     private void UploadButton_Click(object sender, RoutedEventArgs e)
@@ -64,12 +78,25 @@ public partial class MainWindow : Window
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
-            MessageBox.Show("Please log in to view your profile.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Будь ласка, увійдіть, щоб переглянути свій профіль.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             MainContent.Content = new LoginView(_userService);
         }
         else
         {
             MainContent.Content = new UserProfileView(_imageService, _userService, currentUser.Id);
+        }
+    }
+
+    private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
+    {
+        var currentUser = _userService.CurrentUser;
+        if (currentUser?.Role == "Admin")
+        {
+            MainContent.Content = new AdminPanelView(_adminService);
+        }
+        else
+        {
+            MessageBox.Show("Доступ заборонено. Потрібна роль адміністратора..", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -83,23 +110,10 @@ public partial class MainWindow : Window
         MainContent.Content = new RegisterView(_userService);
     }
 
-    private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
-    {
-        var currentUser = _userService.CurrentUser;
-        if (currentUser?.Role == "Admin")
-        {
-            MainContent.Content = new AdminPanelView(_adminService);
-        }
-        else
-        {
-            MessageBox.Show("Access denied. Admin role required.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
         _userService.Logout();
-        UpdateLogoutButtonVisibility();
+        UpdateButtonsVisibility();
         MainContent.Content = new LoginView(_userService);
     }
 }

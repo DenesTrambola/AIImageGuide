@@ -19,17 +19,17 @@ public class ImageService : ServiceBase
     public (bool Success, string Message) UploadImage(string title, string description, int categoryId, string filePath, int userId)
     {
         if (string.IsNullOrWhiteSpace(title) || title.Length > 100)
-            return (false, "Title must be 1-100 characters.");
+            return (false, "Назва має містити від 1 до 100 символів.");
         if (description?.Length > 500)
-            return (false, "Description cannot exceed 500 characters.");
+            return (false, "Опис не може перевищувати 500 символів.");
         if (!_context.Categories.Any(c => c.Id == categoryId))
-            return (false, "Invalid category.");
+            return (false, "Недійсна категорія.");
         if (!_context.Users.Any(u => u.Id == userId && !u.IsBlocked))
-            return (false, "User not found or blocked.");
+            return (false, "Користувача не знайдено або його не заблоковано.");
         if (!File.Exists(filePath) || !new[] { ".jpg", ".jpeg", ".png" }.Contains(Path.GetExtension(filePath).ToLower()))
-            return (false, "Invalid file. Only .jpg, .jpeg, .png allowed.");
+            return (false, "Недійсний файл. Дозволено лише .jpg, .jpeg, .png..");
         if (new FileInfo(filePath).Length > 5 * 1024 * 1024)
-            return (false, "File size must be under 5MB.");
+            return (false, "Розмір файлу має бути менше 5 МБ.");
 
         try
         {
@@ -49,11 +49,11 @@ public class ImageService : ServiceBase
 
             _context.Images.Add(image);
             _context.SaveChanges();
-            return (true, "Image uploaded successfully.");
+            return (true, "Зображення успішно завантажено.");
         }
         catch (Exception ex)
         {
-            return (false, $"Upload failed: {ex.Message}");
+            return (false, $"Не вдалося завантажити: {ex.Message}");
         }
     }
 
@@ -137,10 +137,10 @@ public class ImageService : ServiceBase
     {
         var image = _context.Images.FirstOrDefault(i => i.Id == imageId);
         if (image == null)
-            return (false, "Image not found.");
+            return (false, "Зображення не знайдено.");
 
         if (image.UserId != userId && !isAdmin)
-            return (false, "Only the image owner or an admin can delete this image.");
+            return (false, "Тільки власник зображення або адміністратор може видалити це зображення.");
 
         try
         {
@@ -152,22 +152,22 @@ public class ImageService : ServiceBase
                 File.Delete(image.FilePath);
 
             _context.SaveChanges();
-            return (true, "Image deleted successfully.");
+            return (true, "Зображення успішно видалено.");
         }
         catch (Exception ex)
         {
-            return (false, $"Deletion failed: {ex.Message}");
+            return (false, $"Видалення не вдалося: {ex.Message}");
         }
     }
 
     public (bool Success, string Message) AddRating(int imageId, int userId, int value)
     {
         if (!_context.Images.Any(i => i.Id == imageId))
-            return (false, "Image not found.");
+            return (false, "Зображення не знайдено.");
         if (!_context.Users.Any(u => u.Id == userId && !u.IsBlocked))
-            return (false, "User not found or blocked.");
+            return (false, "Користувача не знайдено або його не заблоковано.");
         if (value < 1 || value > 5)
-            return (false, "Rating must be 1-5.");
+            return (false, "Рейтинг має бути від 1 до 5.");
 
         var existingRating = _context.Ratings.FirstOrDefault(r => r.ImageId == imageId && r.UserId == userId);
         if (existingRating != null)
@@ -180,17 +180,17 @@ public class ImageService : ServiceBase
         }
 
         _context.SaveChanges();
-        return (true, "Rating added.");
+        return (true, "Рейтинг додано.");
     }
 
     public (bool Success, string Message) AddComment(int imageId, int userId, string content)
     {
         if (!_context.Images.Any(i => i.Id == imageId))
-            return (false, "Image not found.");
+            return (false, "Зображення не знайдено.");
         if (!_context.Users.Any(u => u.Id == userId && !u.IsBlocked))
-            return (false, "User not found or blocked.");
+            return (false, "Користувача не знайдено або його не заблоковано.");
         if (string.IsNullOrWhiteSpace(content) || content.Length > 500)
-            return (false, "Comment must be 1-500 characters.");
+            return (false, "Коментар має містити від 1 до 500 символів.");
 
         _context.Comments.Add(new Comment
         {
@@ -201,7 +201,7 @@ public class ImageService : ServiceBase
         });
 
         _context.SaveChanges();
-        return (true, "Comment added.");
+        return (true, "Коментар додано.");
     }
 
     public List<Category> GetCategories()

@@ -29,12 +29,12 @@ public partial class AdminPanelView : UserControl
 
     private void UpdatePaginationControls()
     {
-        PageInfoTextBlock.Text = $"Page {_currentPage} of {_totalPages}";
+        PageInfoTextBlock.Text = $"{_currentPage}/{_totalPages}";
         PreviousButton.IsEnabled = _currentPage > 1;
         NextButton.IsEnabled = _currentPage < _totalPages;
 
         if (_totalPages == 0)
-            PageInfoTextBlock.Text = "No users found.";
+            PageInfoTextBlock.Text = "Користувачів не знайдено.";
     }
 
     private void PreviousButton_Click(object sender, RoutedEventArgs e)

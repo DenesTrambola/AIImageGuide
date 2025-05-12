@@ -8,30 +8,35 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid MaxWidth="400" Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <StackPanel MaxWidth="400" Margin="10,0,10,10">
         <TextBlock
             Margin="0,0,0,20"
             HorizontalAlignment="Center"
             FontSize="24"
             FontWeight="Bold"
-            Text="Register" />
+            Text="Реєстрація" />
+        <TextBlock
+            FontSize="16"
+            FontWeight="Bold"
+            Text="Ім'я користувача" />
         <TextBox
             x:Name="UsernameTextBox"
             Grid.Row="1"
             Margin="0,5"
             Padding="5" />
+        <TextBlock
+            FontSize="16"
+            FontWeight="Bold"
+            Text="Електронна адреса" />
         <TextBox
             x:Name="EmailTextBox"
             Grid.Row="2"
             Margin="0,5"
             Padding="5" />
+        <TextBlock
+            FontSize="16"
+            FontWeight="Bold"
+            Text="Пароль" />
         <PasswordBox
             x:Name="PasswordBox"
             Grid.Row="3"
@@ -39,15 +44,16 @@
             Padding="5" />
         <Button
             Grid.Row="4"
+            Width="120"
+            Height="30"
             Margin="0,10"
             Padding="10,5"
             Click="RegisterButton_Click"
-            Content="Register" />
+            Content="Зареєструватися" />
         <TextBlock
             x:Name="MessageTextBlock"
             Grid.Row="4"
-            Margin="0,40,0,0"
             HorizontalAlignment="Center"
             Foreground="Red" />
-    </Grid>
+    </StackPanel>
 </UserControl>

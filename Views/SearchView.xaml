@@ -8,7 +8,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid Margin="20">
+    <Grid Margin="10,0,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -19,11 +19,17 @@
             Margin="0,0,0,10"
             FontSize="24"
             FontWeight="Bold"
-            Text="Search Images" />
+            Text="Пошук зображень" />
         <StackPanel
             Grid.Row="1"
             Margin="0,0,0,10"
             Orientation="Horizontal">
+            <TextBlock
+                Margin="10,0"
+                VerticalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+                Text="Пошук за" />
             <TextBox
                 x:Name="SearchTextBox"
                 Width="200"
@@ -67,7 +73,7 @@
                                     Margin="0,5"
                                     Padding="5,2"
                                     Click="ViewDetailsButton_Click"
-                                    Content="View Details" />
+                                    Content="Деталі" />
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -84,7 +90,7 @@
                 Margin="5"
                 Padding="10,5"
                 Click="PreviousButton_Click"
-                Content="Previous"
+                Content="Попередні"
                 IsEnabled="False" />
             <TextBlock
                 x:Name="PageInfoTextBlock"
@@ -95,7 +101,7 @@
                 Margin="5"
                 Padding="10,5"
                 Click="NextButton_Click"
-                Content="Next" />
+                Content="Наступні" />
         </StackPanel>
     </Grid>
 </UserControl>

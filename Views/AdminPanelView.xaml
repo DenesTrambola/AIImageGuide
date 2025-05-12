@@ -8,7 +8,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid Margin="20">
+    <Grid Margin="10,0,10,10" Background="{StaticResource PrimaryBackground}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -18,50 +18,40 @@
             Margin="0,0,0,10"
             FontSize="24"
             FontWeight="Bold"
-            Text="Admin Panel - User Management" />
+            Text="Панель адміністратора" />
         <DataGrid
             x:Name="UsersDataGrid"
             Grid.Row="1"
             AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            ItemsSource="{Binding}">
+            CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn
-                    Binding="{Binding Id}"
-                    Header="ID"
-                    IsReadOnly="True" />
-                <DataGridTextColumn
+                    Width="150"
                     Binding="{Binding Username}"
-                    Header="Username"
+                    Header="Ім'я"
                     IsReadOnly="True" />
                 <DataGridTextColumn
+                    Width="200"
                     Binding="{Binding Email}"
-                    Header="Email"
+                    Header="Ел. адреса"
                     IsReadOnly="True" />
                 <DataGridTextColumn
+                    Width="100"
                     Binding="{Binding Role}"
-                    Header="Role"
+                    Header="Роль"
                     IsReadOnly="True" />
                 <DataGridCheckBoxColumn
+                    Width="95"
                     Binding="{Binding IsBlocked}"
-                    Header="Blocked"
+                    Header="Заблоковано"
                     IsReadOnly="True" />
-                <DataGridTemplateColumn Header="Actions">
+                <DataGridTemplateColumn Width="*" Header="Дії">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button
-                                    Margin="5,0"
-                                    Click="BlockButton_Click"
-                                    Content="{Binding IsBlocked, Converter={StaticResource BlockButtonConverter}}" />
-                                <Button
-                                    Margin="5,0"
-                                    Click="ToggleRoleButton_Click"
-                                    Content="Toggle Role" />
-                                <Button
-                                    Margin="5,0"
-                                    Click="DeleteButton_Click"
-                                    Content="Delete" />
+                                <Button Click="BlockButton_Click" Content="{Binding IsBlocked, Converter={StaticResource BlockButtonConverter}}" />
+                                <Button Click="ToggleRoleButton_Click" Content="Змінити роль" />
+                                <Button Click="DeleteButton_Click" Content="Видалити" />
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -75,21 +65,18 @@
             Orientation="Horizontal">
             <Button
                 x:Name="PreviousButton"
-                Margin="5"
-                Padding="10,5"
                 Click="PreviousButton_Click"
-                Content="Previous"
+                Content="Попередні"
                 IsEnabled="False" />
             <TextBlock
                 x:Name="PageInfoTextBlock"
                 Margin="5"
-                VerticalAlignment="Center" />
+                VerticalAlignment="Center"
+                FontSize="13" />
             <Button
                 x:Name="NextButton"
-                Margin="5"
-                Padding="10,5"
                 Click="NextButton_Click"
-                Content="Next" />
+                Content="Наступні" />
         </StackPanel>
     </Grid>
 </UserControl>

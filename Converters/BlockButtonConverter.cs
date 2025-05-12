@@ -7,7 +7,7 @@ public class BlockButtonConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (bool)value ? "Unblock" : "Block";
+        return (bool)value ? "Розблокувати" : "Заблокувати";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -28,16 +28,16 @@ public class UserService : ServiceBase
     public (bool Success, string Message) Register(string username, string email, string password)
     {
         if (string.IsNullOrWhiteSpace(username) || username.Length < 3 || username.Length > 50)
-            return (false, "Username must be 3-50 characters.");
+            return (false, "Ім'я користувача має містити від 3 до 50 символів.");
         if (string.IsNullOrWhiteSpace(email) || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-            return (false, "Invalid email format.");
+            return (false, "Недійсний формат електронної адреси.");
         if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
-            return (false, "Password must be at least 6 characters.");
+            return (false, "Пароль має містити щонайменше 6 символів.");
 
         if (_context.Users.Any(u => u.Username == username))
-            return (false, "Username already exists.");
+            return (false, "Ім'я користувача вже існує.");
         if (_context.Users.Any(u => u.Email == email))
-            return (false, "Email already exists.");
+            return (false, "Електронна адреса вже існує.");
 
         var user = new User
         {
@@ -49,7 +49,7 @@ public class UserService : ServiceBase
 
         _context.Users.Add(user);
         _context.SaveChanges();
-        return (true, "Registration successful.");
+        return (true, "Реєстрація успішна.");
     }
 
     public (bool Success, User User, string Message) Login(string usernameOrEmail, string password, bool rememberMe)
@@ -58,7 +58,7 @@ public class UserService : ServiceBase
             .FirstOrDefault(u => (u.Username == usernameOrEmail || u.Email == usernameOrEmail) && !u.IsBlocked);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            return (false, null, "Invalid username/email or password.");
+            return (false, null, "Недійсне ім'я користувача, електронна адреса або пароль.");
 
         CurrentUser = user;
 
@@ -69,7 +69,7 @@ public class UserService : ServiceBase
             Properties.Settings.Default.Save();
         }
 
-        return (true, user, "Login successful.");
+        return (true, user, "Вхід успішний.");
     }
 
     public User? GetUserById(int userId)

@@ -1,8 +1,8 @@
 ﻿using AIImageGuide.Services;
 using Microsoft.Win32;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace AIImageGuide.Views;
 
@@ -10,7 +10,7 @@ public partial class ImageUploadView : UserControl
 {
     private readonly ImageService _imageService;
     private readonly UserService _userService;
-    private string _selectedFilePath;
+    private string _filePath;
 
     public ImageUploadView(ImageService imageService, UserService userService)
     {
@@ -28,8 +28,9 @@ public partial class ImageUploadView : UserControl
         };
         if (openFileDialog.ShowDialog() == true)
         {
-            _selectedFilePath = openFileDialog.FileName;
-            FilePathTextBlock.Text = Path.GetFileName(_selectedFilePath);
+            _filePath = openFileDialog.FileName;
+            FileControl.Source = new BitmapImage(new Uri(_filePath));
+            FileControl.Visibility = Visibility.Visible;
         }
     }
 
@@ -38,13 +39,13 @@ public partial class ImageUploadView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
-            MessageTextBlock.Text = "Please log in to upload images.";
+            MessageTextBlock.Text = "Будь ласка, увійдіть, щоб завантажити зображення.";
             return;
         }
 
         if (CategoryComboBox.SelectedItem == null)
         {
-            MessageTextBlock.Text = "Please select a category.";
+            MessageTextBlock.Text = "Будь ласка, виберіть категорію.";
             return;
         }
 
@@ -52,7 +53,7 @@ public partial class ImageUploadView : UserControl
             TitleTextBox.Text,
             DescriptionTextBox.Text,
             ((Models.Category)CategoryComboBox.SelectedItem).Id,
-            _selectedFilePath,
+            _filePath,
             currentUser.Id
         );
 
@@ -62,8 +63,8 @@ public partial class ImageUploadView : UserControl
             TitleTextBox.Text = string.Empty;
             DescriptionTextBox.Text = string.Empty;
             CategoryComboBox.SelectedIndex = -1;
-            FilePathTextBlock.Text = string.Empty;
-            _selectedFilePath = null;
+            FileControl.Visibility = Visibility.Collapsed;
+            _filePath = null;
         }
     }
 }

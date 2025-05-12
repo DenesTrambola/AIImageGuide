@@ -19,7 +19,7 @@ public partial class ImageGalleryView : UserControl
         _userService = userService;
 
         var categories = _imageService.GetCategories().ToList();
-        categories.Insert(0, new Models.Category { Id = -1, Name = "All Categories" });
+        categories.Insert(0, new() { Id = 0, Name = "Усі категорії" });
 
         CategoryComboBox.ItemsSource = categories;
         CategoryComboBox.SelectedIndex = 0;
@@ -42,12 +42,12 @@ public partial class ImageGalleryView : UserControl
 
     private void UpdatePaginationControls()
     {
-        PageInfoTextBlock.Text = $"Page {_currentPage} of {_totalPages}";
+        PageInfoTextBlock.Text = $"{_currentPage}/{_totalPages}";
         PreviousButton.IsEnabled = _currentPage > 1;
         NextButton.IsEnabled = _currentPage < _totalPages;
 
         if (_totalPages == 0)
-            PageInfoTextBlock.Text = "No images found.";
+            PageInfoTextBlock.Text = "Зображень не знайдено.";
     }
 
     private void PreviousButton_Click(object sender, RoutedEventArgs e)

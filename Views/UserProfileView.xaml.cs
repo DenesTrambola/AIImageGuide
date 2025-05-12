@@ -1,4 +1,5 @@
-﻿using AIImageGuide.Services;
+﻿using AIImageGuide.Models;
+using AIImageGuide.Services;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -27,7 +28,7 @@ public partial class UserProfileView : UserControl
         var user = _userService.GetUserById(_userId);
         if (user == null)
         {
-            UsernameTextBlock.Text = "User not found.";
+            UsernameTextBlock.Text = "Користувача не знайдено.";
             return;
         }
 
@@ -35,10 +36,10 @@ public partial class UserProfileView : UserControl
         UploadedImagesListView.ItemsSource = _userService.GetUserImages(_userId);
 
         var ratings = _userService.GetUserRatings(_userId)
-            .Select(r => new { Type = "Rated", Content = $"Rated {r.Value}/5", Image = r.Image });
+            .Select(r => new UserActivity() { Type = "Оцінка", Content = $"{r.Value}/5", Image = r.Image });
 
         var comments = _userService.GetUserComments(_userId)
-            .Select(c => new { Type = "Commented", Content = c.Content, Image = c.Image });
+            .Select(c => new UserActivity() { Type = "Прокоментував", Content = c.Content, Image = c.Image });
 
         ActivityListView.ItemsSource = ratings
             .Union(comments)
@@ -49,12 +50,12 @@ public partial class UserProfileView : UserControl
 
     private void UpdatePaginationControls()
     {
-        PageInfoTextBlock.Text = $"Page {_currentPage} of {_totalPages}";
+        PageInfoTextBlock.Text = $"{_currentPage}/{_totalPages}";
         PreviousButton.IsEnabled = _currentPage > 1;
         NextButton.IsEnabled = _currentPage < _totalPages;
 
         if (_totalPages == 0)
-            PageInfoTextBlock.Text = "No images found.";
+            PageInfoTextBlock.Text = "Зображень не знайдено.";
     }
 
     private void PreviousButton_Click(object sender, RoutedEventArgs e)
@@ -90,14 +91,14 @@ public partial class UserProfileView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
-            MessageBox.Show("Please log in to delete images.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Будь ласка, увійдіть, щоб видалити зображення.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
         if (sender is Button button && button.DataContext is Models.Image image)
         {
             var result = _imageService.DeleteImage(image.Id, currentUser.Id, currentUser.Role == "Admin");
-            MessageBox.Show(result.Message, result.Success ? "Success" : "Error", MessageBoxButton.OK, result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
+            MessageBox.Show(result.Message, result.Success ? "Успіх" : "Помилка", MessageBoxButton.OK, result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
             if (result.Success)
                 LoadProfile();
         }
