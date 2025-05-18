@@ -8,7 +8,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid Margin="10,0,10,10" Background="{StaticResource PrimaryBackground}">
+    <Grid Margin="10,0,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -18,6 +18,7 @@
             Margin="0,0,0,10"
             FontSize="24"
             FontWeight="Bold"
+            Foreground="{DynamicResource AppForeground}"
             Text="Панель адміністратора" />
         <DataGrid
             x:Name="UsersDataGrid"
@@ -72,7 +73,8 @@
                 x:Name="PageInfoTextBlock"
                 Margin="5"
                 VerticalAlignment="Center"
-                FontSize="13" />
+                FontSize="13"
+                Foreground="{DynamicResource AppForeground}" />
             <Button
                 x:Name="NextButton"
                 Click="NextButton_Click"

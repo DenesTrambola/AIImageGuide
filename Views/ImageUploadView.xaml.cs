@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace AIImageGuide.Views;
@@ -39,12 +40,14 @@ public partial class ImageUploadView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
+            MessageTextBlock.Foreground = new SolidColorBrush(Colors.Red);
             MessageTextBlock.Text = "Будь ласка, увійдіть, щоб завантажити зображення.";
             return;
         }
 
         if (CategoryComboBox.SelectedItem == null)
         {
+            MessageTextBlock.Foreground = new SolidColorBrush(Colors.Red);
             MessageTextBlock.Text = "Будь ласка, виберіть категорію.";
             return;
         }
@@ -57,6 +60,7 @@ public partial class ImageUploadView : UserControl
             currentUser.Id
         );
 
+        MessageTextBlock.Foreground = result.Success ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
         MessageTextBlock.Text = result.Message;
         if (result.Success)
         {

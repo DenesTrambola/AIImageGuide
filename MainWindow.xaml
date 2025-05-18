@@ -3,12 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:AIImageGuide.Converters"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     Title="AI Image Guide"
     Width="800"
-    Height="500"
+    Height="600"
     MinWidth="600"
-    MinHeight="300"
-    Background="{StaticResource PrimaryBackground}"
+    MinHeight="500"
+    Background="{DynamicResource AppBackground}"
     WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
@@ -20,40 +21,51 @@
         <Border
             Grid.Row="0"
             Padding="10"
-            Background="{StaticResource SecondaryBackground}"
-            BorderBrush="{StaticResource BorderColor}"
             BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal">
                 <Button
+                    Width="120"
+                    Margin="2,0"
+                    Click="ToggleTheme_Click"
+                    Content="Перемкнути тему" />
+                <Button
                     x:Name="GalleryButton"
+                    Margin="2,0"
                     Click="GalleryButton_Click"
                     Content="Галерея" />
                 <Button
                     x:Name="SearchButton"
+                    Margin="2,0"
                     Click="SearchButton_Click"
                     Content="Пошук" />
                 <Button
                     x:Name="UploadButton"
+                    Margin="2,0"
                     Click="UploadButton_Click"
                     Content="Завантажити" />
                 <Button
                     x:Name="ProfileButton"
+                    Margin="2,0"
                     Click="ProfileButton_Click"
                     Content="Профіль" />
                 <Button
                     x:Name="AdminPanelButton"
+                    Margin="2,0"
                     Click="AdminPanelButton_Click"
                     Content="Панель адміна" />
                 <Button
                     x:Name="LoginButton"
+                    Margin="2,0"
                     Click="LoginButton_Click"
                     Content="Вхід" />
                 <Button
                     x:Name="RegisterButton"
+                    Margin="2,0"
                     Click="RegisterButton_Click"
                     Content="Реєстрація" />
                 <Button
                     x:Name="LogoutButton"
+                    Margin="2,0"
                     Click="LogoutButton_Click"
                     Content="Вихід"
                     Visibility="Collapsed" />
@@ -65,8 +77,6 @@
             x:Name="MainContent"
             Grid.Row="1"
             Margin="15,0"
-            Background="{StaticResource SecondaryBackground}"
-            BorderBrush="{StaticResource BorderColor}"
             BorderThickness="1" />
     </Grid>
 </Window>

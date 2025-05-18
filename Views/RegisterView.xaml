@@ -14,10 +14,12 @@
             HorizontalAlignment="Center"
             FontSize="24"
             FontWeight="Bold"
+            Foreground="{DynamicResource AppForeground}"
             Text="Реєстрація" />
         <TextBlock
             FontSize="16"
             FontWeight="Bold"
+            Foreground="{DynamicResource AppForeground}"
             Text="Ім'я користувача" />
         <TextBox
             x:Name="UsernameTextBox"
@@ -27,6 +29,7 @@
         <TextBlock
             FontSize="16"
             FontWeight="Bold"
+            Foreground="{DynamicResource AppForeground}"
             Text="Електронна адреса" />
         <TextBox
             x:Name="EmailTextBox"
@@ -36,6 +39,7 @@
         <TextBlock
             FontSize="16"
             FontWeight="Bold"
+            Foreground="{DynamicResource AppForeground}"
             Text="Пароль" />
         <PasswordBox
             x:Name="PasswordBox"
@@ -53,7 +57,6 @@
         <TextBlock
             x:Name="MessageTextBlock"
             Grid.Row="4"
-            HorizontalAlignment="Center"
-            Foreground="Red" />
+            HorizontalAlignment="Center" />
     </StackPanel>
 </UserControl>

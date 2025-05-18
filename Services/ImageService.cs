@@ -2,6 +2,7 @@
 using AIImageGuide.Models;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace AIImageGuide.Services;
 
@@ -59,7 +60,15 @@ public class ImageService : ServiceBase
 
     public (List<Image> Images, int TotalPages) GetImages(int? categoryId = null, string sortBy = "UploadDate", int page = 1, int pageSize = 6)
     {
-        var query = _context.Images.Include(i => i.User).Include(i => i.Category).Include(i => i.Ratings).AsQueryable();
+        var query = _context.Images
+            .Include(i => i.User)
+            .Include(i => i.Category)
+            .Include(i => i.Ratings)
+            .ThenInclude(r => r.User)
+            .Include(i => i.Comments)
+            .ThenInclude(c => c.User)
+            .AsQueryable();
+
         if (categoryId.HasValue)
             query = query.Where(i => i.CategoryId == categoryId.Value);
 
@@ -78,7 +87,31 @@ public class ImageService : ServiceBase
             .Take(pageSize)
             .ToList();
 
+        string imagesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+        foreach (var image in images)
+            image.FilePath = Path.Combine(imagesDirectory, image.FilePath);
+
         return (images, totalPages);
+    }
+
+    public Image GetImageById(int imageId)
+    {
+        var image = _context.Images
+            .Include(i => i.User)
+            .Include(i => i.Category)
+            .Include(i => i.Ratings)
+            .ThenInclude(r => r.User)
+            .Include(i => i.Comments)
+            .ThenInclude(c => c.User)
+            .FirstOrDefault(i => i.Id == imageId);
+
+        if (image != null)
+        {
+            string imagesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+            image.FilePath = Path.Combine(imagesDirectory, image.FilePath);
+        }
+
+        return image;
     }
 
     public (List<Image> Images, int TotalPages) SearchImages(string query, int? categoryId = null, int page = 1, int pageSize = 6)
@@ -133,7 +166,7 @@ public class ImageService : ServiceBase
         return (images, totalPages);
     }
 
-    public (bool Success, string Message) DeleteImage(int imageId, int userId, bool isAdmin)
+    public (bool Success, string Message) DeleteImageFromDb(int imageId, int userId, bool isAdmin)
     {
         var image = _context.Images.FirstOrDefault(i => i.Id == imageId);
         if (image == null)
@@ -147,12 +180,26 @@ public class ImageService : ServiceBase
             _context.Ratings.RemoveRange(_context.Ratings.Where(r => r.ImageId == imageId));
             _context.Comments.RemoveRange(_context.Comments.Where(c => c.ImageId == imageId));
             _context.Images.Remove(image);
-
-            if (File.Exists(image.FilePath))
-                File.Delete(image.FilePath);
-
             _context.SaveChanges();
             return (true, "Зображення успішно видалено.");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Видалення не вдалося: {ex.Message}");
+        }
+    }
+
+    public (bool Success, string Message) DeleteImageFromFileSystem(string imagePath)
+    {
+        try
+        {
+            if (File.Exists(imagePath))
+            {
+                File.Delete(imagePath);
+                return (true, "Зображення успішно видалено з файлової системи.");
+            }
+            else
+                return (false, "Файл не знайдено.");
         }
         catch (Exception ex)
         {
@@ -207,5 +254,20 @@ public class ImageService : ServiceBase
     public List<Category> GetCategories()
     {
         return _context.Categories.ToList();
+    }
+
+    public BitmapImage LoadImageFromPath(string imagePath)
+    {
+        using (var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.StreamSource = new MemoryStream();
+            stream.CopyTo(image.StreamSource);
+            image.EndInit();
+            image.Freeze();
+            return image;
+        }
     }
 }

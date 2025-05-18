@@ -1,6 +1,7 @@
 ﻿using AIImageGuide.Services;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AIImageGuide.Views;
 
@@ -17,6 +18,7 @@ public partial class LoginView : UserControl
     private void LoginButton_Click(object sender, RoutedEventArgs e)
     {
         var result = _userService.Login(UsernameOrEmailTextBox.Text, PasswordBox.Password, RememberMeCheckBox.IsChecked == true);
+        MessageTextBlock.Foreground = result.Success ? Brushes.Green : Brushes.Red;
         MessageTextBlock.Text = result.Message;
         if (result.Success)
         {
@@ -27,7 +29,7 @@ public partial class LoginView : UserControl
             var mainWindow = Application.Current.MainWindow as MainWindow;
             if (mainWindow != null)
             {
-                mainWindow.MainContent.Content = new TextBlock { Text = "Ласкаво просимо назад!", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                mainWindow.MainContent.Content = new WelcomeView();
                 mainWindow.UpdateButtonsVisibility();
             }
         }

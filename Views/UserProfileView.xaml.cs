@@ -11,7 +11,6 @@ public partial class UserProfileView : UserControl
     private readonly UserService _userService;
     private readonly int _userId;
     private int _currentPage = 1;
-    private int _pageSize = 6;
     private int _totalPages = 1;
 
     public UserProfileView(ImageService imageService, UserService userService, int userId)
@@ -32,8 +31,8 @@ public partial class UserProfileView : UserControl
             return;
         }
 
-        UsernameTextBlock.Text = user.Username;
         UploadedImagesListView.ItemsSource = _userService.GetUserImages(_userId);
+        UsernameTextBlock.Text = user.Username;
 
         var ratings = _userService.GetUserRatings(_userId)
             .Select(r => new UserActivity() { Type = "Оцінка", Content = $"{r.Value}/5", Image = r.Image });
@@ -50,6 +49,7 @@ public partial class UserProfileView : UserControl
 
     private void UpdatePaginationControls()
     {
+
         PageInfoTextBlock.Text = $"{_currentPage}/{_totalPages}";
         PreviousButton.IsEnabled = _currentPage > 1;
         NextButton.IsEnabled = _currentPage < _totalPages;
@@ -97,10 +97,17 @@ public partial class UserProfileView : UserControl
 
         if (sender is Button button && button.DataContext is Models.Image image)
         {
-            var result = _imageService.DeleteImage(image.Id, currentUser.Id, currentUser.Role == "Admin");
-            MessageBox.Show(result.Message, result.Success ? "Успіх" : "Помилка", MessageBoxButton.OK, result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
-            if (result.Success)
-                LoadProfile();
+            var deleteFromDbResult = _imageService.DeleteImageFromDb(image.Id, currentUser.Id, currentUser.Role == "Admin");
+            if (deleteFromDbResult.Success)
+                UploadedImagesListView.ItemsSource = null;
+            MessageBox.Show(deleteFromDbResult.Message, deleteFromDbResult.Success ? "Успіх" : "Помилка", MessageBoxButton.OK, deleteFromDbResult.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            _imageService.DeleteImageFromFileSystem(image.FilePath);
+
+            LoadProfile();
         }
     }
 }

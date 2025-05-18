@@ -1,6 +1,7 @@
 ﻿using AIImageGuide.Services;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace AIImageGuide.Views;
@@ -22,10 +23,11 @@ public partial class ImageDetailsView : UserControl
 
     private void LoadImageDetails()
     {
-        var image = _imageService.GetImages().Images.FirstOrDefault(i => i.Id == _imageId);
+        var image = _imageService.GetImageById(_imageId);
 
         if (image == null)
         {
+            TitleTextBlock.Foreground = new SolidColorBrush(Colors.Red);
             TitleTextBlock.Text = "Зображення не знайдено.";
             return;
         }
@@ -41,6 +43,7 @@ public partial class ImageDetailsView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
+            RatingMessageTextBlock.Foreground = new SolidColorBrush(Colors.Red);
             RatingMessageTextBlock.Text = "Будь ласка, увійдіть, щоб оцінити.";
             RatingComboBox.SelectedIndex = -1;
             return;
@@ -49,6 +52,7 @@ public partial class ImageDetailsView : UserControl
         if (RatingComboBox.SelectedItem is ComboBoxItem selectedItem && int.TryParse(selectedItem.Content.ToString(), out int rating))
         {
             var result = _imageService.AddRating(_imageId, currentUser.Id, rating);
+            RatingMessageTextBlock.Foreground = new SolidColorBrush(result.Success ? Colors.Green : Colors.Red);
             RatingMessageTextBlock.Text = result.Message;
             RatingComboBox.SelectedIndex = -1;
         }
@@ -59,11 +63,13 @@ public partial class ImageDetailsView : UserControl
         var currentUser = _userService.CurrentUser;
         if (currentUser == null)
         {
+            CommentMessageTextBlock.Foreground = new SolidColorBrush(Colors.Red);
             CommentMessageTextBlock.Text = "Будь ласка, увійдіть, щоб залишити коментар.";
             return;
         }
 
         var result = _imageService.AddComment(_imageId, currentUser.Id, CommentTextBox.Text);
+        CommentMessageTextBlock.Foreground = new SolidColorBrush(result.Success ? Colors.Green : Colors.Red);
         CommentMessageTextBlock.Text = result.Message;
         if (result.Success)
         {

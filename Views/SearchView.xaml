@@ -19,6 +19,7 @@
             Margin="0,0,0,10"
             FontSize="24"
             FontWeight="Bold"
+            Foreground="{DynamicResource AppForeground}"
             Text="Пошук зображень" />
         <StackPanel
             Grid.Row="1"
@@ -29,6 +30,7 @@
                 VerticalAlignment="Center"
                 FontSize="18"
                 FontWeight="Bold"
+                Foreground="{DynamicResource AppForeground}"
                 Text="Пошук за" />
             <TextBox
                 x:Name="SearchTextBox"
@@ -95,7 +97,8 @@
             <TextBlock
                 x:Name="PageInfoTextBlock"
                 Margin="5"
-                VerticalAlignment="Center" />
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource AppForeground}" />
             <Button
                 x:Name="NextButton"
                 Margin="5"

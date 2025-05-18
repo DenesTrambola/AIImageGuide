@@ -1,13 +1,17 @@
 ﻿using AIImageGuide.Data;
 using AIImageGuide.Services;
 using AIImageGuide.Views;
+using HandyControl.Themes;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
+using System.Windows.Media;
 
 namespace AIImageGuide;
 
 public partial class MainWindow : Window
 {
+    private bool isDarkTheme = true;
+
     private readonly UserService _userService;
     private readonly AdminService _adminService;
     private readonly ImageService _imageService;
@@ -29,6 +33,8 @@ public partial class MainWindow : Window
         MainContent.Content = _userService.CurrentUser == null
             ? new LoginView(_userService)
             : new ImageGalleryView(_imageService, _userService);
+
+        UpdateTheme();
     }
 
     public void UpdateButtonsVisibility()
@@ -115,5 +121,28 @@ public partial class MainWindow : Window
         _userService.Logout();
         UpdateButtonsVisibility();
         MainContent.Content = new LoginView(_userService);
+    }
+
+    private void ToggleTheme_Click(object sender, RoutedEventArgs e)
+    {
+        UpdateTheme();
+    }
+
+    private void UpdateTheme()
+    {
+        if (isDarkTheme)
+        {
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+            Application.Current.Resources["AppBackground"] = new SolidColorBrush(Color.FromRgb(237, 246, 249));
+            Application.Current.Resources["AppForeground"] = new SolidColorBrush(Colors.Black);
+            isDarkTheme = false;
+        }
+        else
+        {
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+            Application.Current.Resources["AppBackground"] = new SolidColorBrush(Color.FromRgb(30, 30, 45));
+            Application.Current.Resources["AppForeground"] = new SolidColorBrush(Colors.White);
+            isDarkTheme = true;
+        }
     }
 }

@@ -19,12 +19,13 @@
                 Margin="0,0,0,10"
                 FontSize="24"
                 FontWeight="Bold"
+                Foreground="{DynamicResource AppForeground}"
                 Text="Профіль користувача" />
             <TabControl Grid.Row="1" Margin="0,0,0,10">
                 <TabItem
-                    Width="130"
+                    Width="100"
                     Height="30"
-                    Header="Завантажені зображення">
+                    Header="Зображення">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
@@ -85,7 +86,8 @@
                             <TextBlock
                                 x:Name="PageInfoTextBlock"
                                 Margin="5"
-                                VerticalAlignment="Center" />
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource AppForeground}" />
                             <Button
                                 x:Name="NextButton"
                                 Margin="5"
@@ -96,7 +98,7 @@
                     </Grid>
                 </TabItem>
                 <TabItem
-                    Width="70"
+                    Width="90"
                     Height="30"
                     Header="Активність">
                     <Grid>

@@ -58,7 +58,7 @@ public class UserService : ServiceBase
             .FirstOrDefault(u => (u.Username == usernameOrEmail || u.Email == usernameOrEmail) && !u.IsBlocked);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            return (false, null, "Недійсне ім'я користувача, електронна адреса або пароль.");
+            return (false, null, "Недійсне ім'я користувача або пароль.");
 
         CurrentUser = user;
 
