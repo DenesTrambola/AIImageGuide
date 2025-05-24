@@ -21,7 +21,7 @@ public class ImageService : ServiceBase
     {
         if (string.IsNullOrWhiteSpace(title) || title.Length > 100)
             return (false, "Назва має містити від 1 до 100 символів.");
-        if (description?.Length > 500)
+        if (description.Length > 500)
             return (false, "Опис не може перевищувати 500 символів.");
         if (!_context.Categories.Any(c => c.Id == categoryId))
             return (false, "Недійсна категорія.");
@@ -44,7 +44,7 @@ public class ImageService : ServiceBase
                 Title = title,
                 Description = description,
                 CategoryId = categoryId,
-                FilePath = destinationPath,
+                FilePath = fileName,
                 UploadDate = DateTime.UtcNow
             };
 
@@ -87,11 +87,26 @@ public class ImageService : ServiceBase
             .Take(pageSize)
             .ToList();
 
+        var imagesWithFilePath = images.Select(i => new Image
+        {
+            Id = i.Id,
+            UserId = i.UserId,
+            User = i.User,
+            Title = i.Title,
+            Description = i.Description,
+            CategoryId = i.CategoryId,
+            Category = i.Category,
+            FilePath = i.FilePath, // This will be updated later
+            UploadDate = i.UploadDate,
+            Ratings = i.Ratings,
+            Comments = i.Comments
+        }).ToList();
+
         string imagesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-        foreach (var image in images)
+        foreach (var image in imagesWithFilePath)
             image.FilePath = Path.Combine(imagesDirectory, image.FilePath);
 
-        return (images, totalPages);
+        return (imagesWithFilePath, totalPages);
     }
 
     public Image GetImageById(int imageId)

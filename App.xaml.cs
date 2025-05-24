@@ -13,9 +13,17 @@ public partial class App : Application
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseSqlite("Data Source=image-guide.db");
 
-        using (var context = new AppDbContext(optionsBuilder.Options))
+        try
         {
-            context.Database.Migrate();
+            using (var context = new AppDbContext(optionsBuilder.Options))
+            {
+                context.Database.Migrate();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString(), "Startup Error");
+            Shutdown();
         }
     }
 }
